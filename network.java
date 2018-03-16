@@ -4,7 +4,7 @@ import java.net.*;
 
 public class network {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
 
     // check for port number
     int port = -1;
