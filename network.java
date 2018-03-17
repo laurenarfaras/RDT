@@ -18,6 +18,12 @@ public class network {
     // create server socket instance
     ServerSocket serverSocket = new ServerSocket(port);
 
+    listen:
+    System.out.println("listening...");
+    serverSocket.accept();
+
+
+
   }
 
 }
