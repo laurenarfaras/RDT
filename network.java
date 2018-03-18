@@ -23,25 +23,26 @@ public class network {
       // listen for the two incoming connections
       listen:
       System.out.println("listening...");
-      serverSocket.accept();
-      serverSocket.accept();
+      Socket sender = serverSocket.accept();
+      Socket receiver = serverSocket.accept();
       System.out.println("Two sockets connected");
+      mainmenu(sender, receiver);
 
     } catch (Exception e) {
       System.out.println("Error: " + e);
     }
 
-    mainmenu();
-
   }
 
-  public static void mainmenu(){
+  public static void mainmenu(Socket sender, Socket receiver) throws IOException {
 
     Scanner sc = new Scanner(System.in);
     String command = sc.nextLine();
     System.out.println("command: " + command);
 
     if (command.equals("bye")) {
+      sender.close();
+      receiver.close();
       System.exit(0);
     }
 
@@ -62,7 +63,7 @@ public class network {
       System.out.println("drop");
     }
 
-    mainmenu();
+    mainmenu(sender, receiver);
 
   }
 
