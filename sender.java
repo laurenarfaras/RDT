@@ -47,7 +47,8 @@ public class sender {
         boolean verified = false;
         // send output to server
         // String messageOut = "0 1 317 You";
-        String checksum = "100";
+        // String checksum = "100";
+        String checksum = getChecksum(fileSplit[id-1]);
         String messageOut = seqNo + " " + Integer.toString(id) + " " + checksum + " " + fileSplit[id-1];
         System.out.println("message out: " + messageOut);
         networkOut.println(messageOut);
@@ -85,6 +86,16 @@ public class sender {
       System.exit(0);
     }
 
+  }
+
+  public static String getChecksum(String packageContent) {
+    int ansiVal;
+		int cs = 0;
+		for (int i = 0; i < packageContent.length(); i++) {
+			ansiVal = (int) packageContent.charAt(i);
+			cs = cs + ansiVal;
+		}
+		return Integer.toString(cs);
   }
 
 }

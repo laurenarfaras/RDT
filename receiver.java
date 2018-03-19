@@ -112,7 +112,13 @@ public class receiver {
   }
 
   public static boolean checksum(String message, int checksum) {
-    return true;
+    int ansiVal;
+		int cs = 0;
+		for (int i = 0; i < message.length(); i++) {
+			ansiVal = (int) message.charAt(i);
+			cs = cs + ansiVal;
+		}
+		return (cs == checksum);
   }
 
 }
