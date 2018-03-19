@@ -60,12 +60,23 @@ public class sender {
         }
         System.out.println("verified? " + verified);
         if (verified) {
+
+          // terminate gracefully
+          if (fileSplit.length == id) {
+            networkOut.println("bye");
+            s.close();
+            networkIn.close();
+            networkOut.close();
+            System.exit(0);
+          }
+
           id = id + 1;
           if (seqNo.equals("0")) {
             seqNo = "1";
           } else {
             seqNo = "0";
           }
+
         }
       }
 

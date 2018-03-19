@@ -89,6 +89,9 @@ public class receiver {
 
     }
 
+    System.out.println("message out: " + messageOut);
+    networkOut.println(messageOut);
+
     if (messageSplit.length == 4) {
       // check if last package in message
       String lastCharacter = messageSplit[3].substring(messageSplit[3].length() - 1);
@@ -96,16 +99,12 @@ public class receiver {
         // this is the last packet in message
         // print full message
         System.out.println("Message: " + fullMsg);
+        s.close();
         networkOut.close();
         networkIn.close();
-        s.close();
         System.exit(0);
       }
     }
-
-
-    System.out.println("message out: " + messageOut);
-    networkOut.println(messageOut);
 
     // call mainmenu function to loop the program
     mainmenu(s, networkOut, networkIn);

@@ -68,12 +68,12 @@ public class network {
     }
 
     if (messageIn.equals("bye")) {
+      sender.close();
       senderIn.close();
       senderOut.close();
-      sender.close();
+      receiver.close();
       receiverIn.close();
       receiverOut.close();
-      receiver.close();
       System.exit(0);
     }
 
