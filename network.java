@@ -5,6 +5,8 @@ import java.lang.*;
 
 public class network {
 
+  public static boolean fromSender = true;
+
   public static void main(String[] args) throws IOException {
 
     // check for port number
@@ -32,6 +34,9 @@ public class network {
       PrintStream receiverOut = new PrintStream(receiver.getOutputStream());
       BufferedReader receiverIn = new BufferedReader(new InputStreamReader(receiver.getInputStream()));
 
+      // first socket to connect is sender
+      senderOut.println("hi you're the sender");
+
       // call mainmenu function to begin communicating with sockets
       mainmenu(sender, receiver, senderOut, senderIn, receiverOut, receiverIn);
 
@@ -43,15 +48,23 @@ public class network {
 
   public static void mainmenu(Socket sender, Socket receiver, PrintStream senderOut, BufferedReader senderIn, PrintStream receiverOut, BufferedReader receiverIn) throws IOException {
 
-    // first socket to connect is sender
-    senderOut.println("hi you're the sender");
-
-    // read in message from sender
+    System.out.println("from sender: " + fromSender);
+    // read in message
     String messageIn = "";
-    try {
-      messageIn = senderIn.readLine();
-    } catch (SocketException e) {
-      System.out.println("SocketException: " + e);
+    if (fromSender) {
+      // if the sender is sending a message read in from sender
+      try {
+        messageIn = senderIn.readLine();
+      } catch (SocketException e) {
+        System.out.println("SocketException: " + e);
+      }
+    } else {
+      // if the receiver is sending a message read in from receiver
+      try {
+        messageIn = receiverIn.readLine();
+      } catch (SocketException e) {
+        System.out.println("SocketException: " + e);
+      }
     }
 
     if (messageIn.equals("bye")) {
@@ -86,7 +99,7 @@ public class network {
     String messageOut = "";
 
     // logic to implement operation based on the chosen random value
-    if (r <= 0.50) {
+    if (r <= 0.50 || ack) {
       // if pass leave the message the same
       pass = true;
       System.out.println("pass");
@@ -116,13 +129,21 @@ public class network {
 
     // send messageOut to corresponding socket
     System.out.println("message to send: " + messageOut);
-    if (packet) {
+    if (fromSender) {
       receiverOut.println(messageOut);
-    } else if (ack) {
+    } else if (!fromSender) {
       senderOut.println(messageOut);
     } else {
       System.err.println("error: cannot identify if message is packet/ACK");
     }
+
+    fromSender = !fromSender;
+    // try {
+    //   messageIn = receiverIn.readLine();
+    //   System.out.println("message from receiver: " + messageIn);
+    // } catch (SocketException e) {
+    //   System.out.println("SocketException: " + e);
+    // }
 
     // call mainmenu function again to loop the program
     mainmenu(sender, receiver, senderOut, senderIn, receiverOut, receiverIn);

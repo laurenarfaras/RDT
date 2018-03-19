@@ -25,14 +25,14 @@ public class receiver {
     // start new socket connection with the url and port
     Socket s = new Socket(url, port);
     // create reading/writing streams to communicate with the network socket server
-    PrintWriter networkOut = new PrintWriter(s.getOutputStream());
+    PrintStream networkOut = new PrintStream(s.getOutputStream());
     BufferedReader networkIn = new BufferedReader(new InputStreamReader(s.getInputStream()));
     // call mainmenu function to begin communicating with network
     mainmenu(s, networkOut, networkIn);
 
   }
 
-  public static void mainmenu(Socket s, PrintWriter networkOut, BufferedReader networkIn) {
+  public static void mainmenu(Socket s, PrintStream networkOut, BufferedReader networkIn) throws IOException {
 
     // read in message from network
     String messageIn = "";
@@ -89,9 +89,6 @@ public class receiver {
 
     }
 
-    System.out.println("message out: " + messageOut);
-    networkOut.println(messageOut);
-
     if (messageSplit.length == 4) {
       // check if last package in message
       String lastCharacter = messageSplit[3].substring(messageSplit[3].length() - 1);
@@ -99,8 +96,16 @@ public class receiver {
         // this is the last packet in message
         // print full message
         System.out.println("Message: " + fullMsg);
+        networkOut.close();
+        networkIn.close();
+        s.close();
+        System.exit(0);
       }
     }
+
+
+    System.out.println("message out: " + messageOut);
+    networkOut.println(messageOut);
 
     // call mainmenu function to loop the program
     mainmenu(s, networkOut, networkIn);
