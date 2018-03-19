@@ -45,9 +45,6 @@ public class sender {
       // create loop to handle network communication until termination
       while (true) {
         boolean verified = false;
-        // send output to server
-        // String messageOut = "0 1 317 You";
-        // String checksum = "100";
         String checksum = getChecksum(fileSplit[id-1]);
         String messageOut = seqNo + " " + Integer.toString(id) + " " + checksum + " " + fileSplit[id-1];
         System.out.println("message out: " + messageOut);

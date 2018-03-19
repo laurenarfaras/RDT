@@ -48,7 +48,6 @@ public class network {
 
   public static void mainmenu(Socket sender, Socket receiver, PrintStream senderOut, BufferedReader senderIn, PrintStream receiverOut, BufferedReader receiverIn) throws IOException {
 
-    System.out.println("from sender: " + fromSender);
     // read in message
     String messageIn = "";
     if (fromSender) {
@@ -91,7 +90,6 @@ public class network {
 
     // choose a random value to determine operation
     double r = Math.random();
-    System.out.println("random number: " + r);
 
     boolean pass = false;
     boolean corrupt = false;
@@ -102,12 +100,10 @@ public class network {
     if (r <= 0.50 || ack) {
       // if pass leave the message the same
       pass = true;
-      System.out.println("pass");
       messageOut = String.join(" ", messageSplit);
     } else if (r > 0.50 && r  <= 0.75) {
       // if corrupt, add one to the checksum
       corrupt = true;
-      System.out.println("corrupt");
       if (packet) {
         int checksum = Integer.parseInt(messageSplit[2]);
         checksum = checksum + 1;
@@ -123,12 +119,11 @@ public class network {
     } else if (r > 0.75) {
       // if drop then send ACK2 message
       drop = true;
-      System.out.println("drop");
       messageOut = "2 0";
     }
 
     // send messageOut to corresponding socket
-    System.out.println("message to send: " + messageOut);
+    // System.out.println("message to send: " + messageOut);
     if (fromSender) {
       receiverOut.println(messageOut);
     } else if (!fromSender) {
@@ -138,12 +133,21 @@ public class network {
     }
 
     fromSender = !fromSender;
-    // try {
-    //   messageIn = receiverIn.readLine();
-    //   System.out.println("message from receiver: " + messageIn);
-    // } catch (SocketException e) {
-    //   System.out.println("SocketException: " + e);
-    // }
+
+    String printout = "";
+    if (packet) {
+      printout = "Received: Packet" + messageSplit[0] + ", " + messageSplit[1] + ", ";
+    } else {
+      printout = "Received: ACK" + messageSplit[0] + ", ";
+    }
+    if (drop) {
+      printout = printout + "DROP";
+    } else if (pass) {
+      printout = printout + "PASS";
+    } else if (corrupt) {
+      printout = printout + "CORRUPT";
+    }
+    System.out.println(printout);
 
     // call mainmenu function again to loop the program
     mainmenu(sender, receiver, senderOut, senderIn, receiverOut, receiverIn);
