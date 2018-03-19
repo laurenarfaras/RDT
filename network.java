@@ -26,10 +26,13 @@ public class network {
       Socket sender = serverSocket.accept();
       Socket receiver = serverSocket.accept();
       System.out.println("Two sockets connected");
+      // create reading streams to communicate with sender and receiver sockets
       PrintStream senderOut = new PrintStream(sender.getOutputStream());
       BufferedReader senderIn = new BufferedReader(new InputStreamReader(sender.getInputStream()));
       PrintStream receiverOut = new PrintStream(receiver.getOutputStream());
       BufferedReader receiverIn = new BufferedReader(new InputStreamReader(receiver.getInputStream()));
+
+      // call mainmenu function to begin communicating with sockets
       mainmenu(sender, receiver, senderOut, senderIn, receiverOut, receiverIn);
 
     } catch (Exception e) {
@@ -40,16 +43,18 @@ public class network {
 
   public static void mainmenu(Socket sender, Socket receiver, PrintStream senderOut, BufferedReader senderIn, PrintStream receiverOut, BufferedReader receiverIn) throws IOException {
 
+    // first socket to connect is sender
     senderOut.println("hi you're the sender");
 
-    String senderMessage = "";
+    // read in message from sender
+    String messageIn = "";
     try {
-      senderMessage = senderIn.readLine();
+      messageIn = senderIn.readLine();
     } catch (SocketException e) {
       System.out.println("SocketException: " + e);
     }
 
-    if (senderMessage.equals("bye")) {
+    if (messageIn.equals("bye")) {
       senderIn.close();
       senderOut.close();
       sender.close();
@@ -62,13 +67,13 @@ public class network {
     boolean packet = false;
     boolean ack = false;
 
-    String[] messageSplit = senderMessage.split("\\s+");
+    String[] messageSplit = messageIn.split("\\s+");
     if (messageSplit.length == 4) {
       packet = true;
     } else if (messageSplit.length == 2) {
       ack = true;
     } else {
-      System.out.println("error: cannot identify if message is packet/ACK");
+      System.err.println("error: cannot identify if message is packet/ACK");
     }
 
     // choose a random value to determine operation
@@ -78,13 +83,16 @@ public class network {
     boolean pass = false;
     boolean corrupt = false;
     boolean drop = false;
-    String messageToSend = "";
+    String messageOut = "";
 
+    // logic to implement operation based on the chosen random value
     if (r <= 0.50) {
+      // if pass leave the message the same
       pass = true;
       System.out.println("pass");
-      messageToSend = String.join(" ", messageSplit);
+      messageOut = String.join(" ", messageSplit);
     } else if (r > 0.50 && r  <= 0.75) {
+      // if corrupt, add one to the checksum
       corrupt = true;
       System.out.println("corrupt");
       if (packet) {
@@ -96,25 +104,27 @@ public class network {
         checksum = checksum + 1;
         messageSplit[1] = Integer.toString(checksum);
       } else {
-        System.out.println("error: cannot identify if message is packet/ACK");
+        System.err.println("error: cannot identify if message is packet/ACK");
       }
-      messageToSend = String.join(" ", messageSplit);
+      messageOut = String.join(" ", messageSplit);
     } else if (r > 0.75) {
+      // if drop then send ACK2 message
       drop = true;
       System.out.println("drop");
-      messageToSend = "2 0";
+      messageOut = "2 0";
     }
 
-    System.out.println("message to send: " + messageToSend);
-
+    // send messageOut to corresponding socket
+    System.out.println("message to send: " + messageOut);
     if (packet) {
-
+      receiverOut.println(messageOut);
     } else if (ack) {
-
+      senderOut.println(messageOut);
     } else {
-
+      System.err.println("error: cannot identify if message is packet/ACK");
     }
 
+    // call mainmenu function again to loop the program
     mainmenu(sender, receiver, senderOut, senderIn, receiverOut, receiverIn);
 
   }
