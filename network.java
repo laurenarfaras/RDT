@@ -12,7 +12,7 @@ public class network {
     if (args.length == 1) {
       port = Integer.parseInt(args[0]);
     } else {
-      System.out.println("Please enter a port number.");
+      System.out.println("java network <port>");
       System.exit(0);
     }
 
